@@ -117,7 +117,7 @@ The system operates on the following key data entities:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/supply-chain-optimizer.git
+   git clone https://github.com/externref/bi_project.git
    cd supply-chain-optimizer
    ```
 
