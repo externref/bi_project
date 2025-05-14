@@ -1,364 +1,289 @@
-# Supply Chain Expert System: Mathematical and Computational Optimization
+# Supply Chain Optimization System
 
-## 1. Demand Forecasting
+![Supply Chain Management](https://img.shields.io/badge/Supply%20Chain-Optimization-blue)
+![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-brightgreen)
+![SQLite](https://img.shields.io/badge/Database-SQLite-orange)
+![Flask](https://img.shields.io/badge/API-Flask-lightgrey)
+![Version](https://img.shields.io/badge/Version-1.0.0-success)
 
-### Mathematical Model
+##  Overview
 
-#### Seasonal Decomposition Mathematics
+The Supply Chain Optimization System is a comprehensive data-driven solution designed to streamline and optimize supply chain operations. It combines advanced analytics, machine learning, and expert systems to provide actionable insights for inventory management, demand forecasting, supplier analysis, and risk assessment.
 
-**Yearly Seasonality Model**:
-$S_{yearly} = A \cdot \sin\left(\frac{2\pi \cdot month}{12}\right)$
+The system consists of three primary components:
+- Core Optimization Engine (`SQLiteSupplyChainOptimizer`)
+- RESTful API Backend (`backend.py`)
+- Expert System for Quick Insights (`expert_system.py`)
 
-Where:
-- $S_{yearly}$ is the yearly seasonal component
-- $A$ is the amplitude (scaling factor)
-- $month$ represents the current month (1-12)
+##  Features
 
-**Weekly Seasonality Model**:
-$S_{weekly} = B \cdot \sin\left(\frac{2\pi \cdot day}{7}\right)$
+### Core Optimization Engine
 
-Where:
-- $S_{weekly}$ is the weekly seasonal component
-- $B$ is the amplitude (scaling factor)
-- $day$ represents the day of the week (0-6)
+- **Advanced Data Preprocessing**
+  - Automated cleaning and normalization
+  - Feature engineering for time-series data
+  - Missing value imputation
+  - Categorical data encoding
 
-**Composite Seasonal Forecast**:
-$Forecast = Base_{demand} + S_{yearly} + S_{weekly} + \epsilon$
+- **Demand Forecasting**
+  - Machine learning-based time series forecasting
+  - Feature importance analysis
+  - Accuracy metrics (MAPE, RMSE)
+  - Customizable forecast horizon
 
-**Error Metrics**:
-1. Mean Absolute Percentage Error (MAPE):
-   $MAPE = \frac{100\%}{n} \sum_{t=1}^{n} \left|\frac{Actual_t - Forecast_t}{Actual_t}\right|$
+- **Supplier Analysis**
+  - Multi-criteria supplier evaluation
+  - Weighted scoring system
+  - Risk categorization
+  - Supplier ranking
 
-### Implementation Code
+- **Inventory Optimization**
+  - Economic Order Quantity (EOQ) calculation
+  - Safety stock determination
+  - Reorder point optimization
+  - Order frequency recommendations
+  - Total cost analysis
 
-```python
-def advanced_demand_forecasting(self, product_id=None, forecast_horizon=90):
-    # Prophet Forecast with Seasonal Decomposition
-    prophet_model = Prophet(
-        seasonality_mode='multiplicative',
-        yearly_seasonality=True,
-        weekly_seasonality=True,
-        daily_seasonality=False
-    )
-    
-    # Prepare data
-    prophet_df = df[['date', 'sales_quantity']].rename(
-        columns={'date': 'ds', 'sales_quantity': 'y'}
-    )
-    
-    # Fit and forecast
-    prophet_model.fit(prophet_df)
-    future = prophet_model.make_future_dataframe(periods=forecast_horizon)
-    prophet_forecast = prophet_model.predict(future)
-    
-    # Calculate MAPE
-    mape = np.mean(np.abs(
-        (prophet_forecast['y'] - prophet_forecast['yhat']) / 
-        prophet_forecast['y']
-    )) * 100
-    
-    return {
-        'forecast': prophet_forecast,
-        'mape': mape
-    }
-```
+- **Risk Assessment**
+  - Comprehensive supply chain risk analysis
+  - Supplier risk evaluation
+  - Inventory risk detection
+  - External factor monitoring
+  - Overall risk scoring
 
-## 2. Supplier Selection
+- **Reporting**
+  - Customizable report generation
+  - Multiple report types
 
-### Mathematical Model
+### RESTful API Backend
 
-**Normalization Function**:
-$X_{normalized,i} = \frac{X_i - \min(X)}{\max(X) - \min(X)}$
+- **Data Access Endpoints**
+  - `/api/sales` - Sales data with filtering options
+  - `/api/suppliers` - Supplier data with filtering options
+  - `/api/inventory` - Inventory data with filtering options
+  - `/api/products` - Product master data with filtering options
+  - `/api/external-factors` - External market/environmental factors
 
-**Weighted Scoring Function**:
-$Total_{Score} = \sum_{i=1}^{n} (X_{normalized,i} \cdot W_i)$
+- **Aggregated Insights**
+  - `/api/dashboard` - Aggregated dashboard metrics
+  - `/api/expert-insights` - Expert system analysis results
 
-**Risk Probability Calculation**:
-$Risk_{Probability} = \sigma\left(\sum_{j=1}^{m} \beta_j X_j\right)$
+- **CRUD Operations**
+  - Create new records for all entities
+  - Update existing records
+  - Delete records
 
-Where:
-- $\sigma$ is the sigmoid function
-- $\beta_j$ are model coefficients
-- $X_j$ are risk features
-- $m$ is the number of risk features
+- **Cross-Origin Resource Sharing (CORS)**
+  - Enabled for integration with web applications
 
-### Implementation Code
+### Expert System
 
-```python
-def advanced_supplier_selection(self, criteria_weights=None):
-    # Default criteria weights
-    if criteria_weights is None:
-        criteria_weights = {
-            'price_rating': 0.25,
-            'quality_rating': 0.25,
-            'delivery_time': 0.2,
-            'reliability_score': 0.2,
-            'financial_stability_score': 0.1
-        }
-    
-    # Normalize supplier metrics
-    scaler = StandardScaler()
-    criteria = list(criteria_weights.keys())
-    normalized_df = pd.DataFrame(
-        scaler.fit_transform(df[criteria]),
-        columns=criteria
-    )
-    
-    # Calculate weighted total score
-    normalized_df['total_score'] = sum(
-        normalized_df[criteria] * weight 
-        for criteria, weight in criteria_weights.items()
-    ).sum(axis=1)
-    
-    # Risk classification
-    risk_classifier = RandomForestClassifier(n_estimators=100)
-    risk_features = ['price_rating', 'delivery_time', 'financial_stability_score']
-    
-    X = df[risk_features]
-    y = (df['reliability_score'] < 0.5).astype(int)
-    
-    risk_classifier.fit(X, y)
-    normalized_df['risk_probability'] = risk_classifier.predict_proba(X)[:, 1]
-    
-    return {
-        'supplier_ranking': normalized_df.sort_values('total_score', ascending=False),
-        'risk_analysis': {
-            'high_risk_suppliers': normalized_df[normalized_df['risk_probability'] > 0.5],
-            'low_risk_suppliers': normalized_df[normalized_df['risk_probability'] <= 0.5]
-        }
-    }
-```
+- **Quick Insights**
+  - Sales summary statistics
+  - Inventory alerts for low stock
+  - Supplier risk identification
 
-## 3. Inventory Optimization
+##  Technology Stack
 
-### Mathematical Model
+- **Python 3.8+** - Core programming language
+- **NumPy & Pandas** - Data manipulation and analysis
+- **Scikit-learn** - Machine learning algorithms
+- **Matplotlib & Seaborn** - Data visualization
+- **SQLite** - Database management
+- **Flask** - Web API framework
+- **Flask-CORS** - Cross-Origin Resource Sharing
 
-**Total Cost Minimization**:
-$\min Z = \sum_{i=1}^{n} (O_i \cdot C_{order} + H_i \cdot C_{holding})$
+##  Mathematical Model
+- **[Supply Chain Expert System: Supply-Chain-Optimizer](https://github.com/RiturajSingh2004/Supply-Chain-Optimizer)**
 
-Subject to constraints:
-1. Demand Satisfaction: $O_i \geq D_i$
-2. Capacity Constraint: $O_i \leq Q_{max,i}$
+##  Data Model
 
-Where:
-- $Z$ is the total cost
-- $O_i$ is the order quantity for product $i$
-- $C_{order}$ is the order cost
-- $C_{holding}$ is the holding cost
-- $D_i$ is the annual demand
-- $Q_{max,i}$ is the maximum order quantity
-- $n$ is the number of products
+The system operates on the following key data entities:
 
-### Implementation Code
+- **Sales Data** - Historical sales records
+- **Suppliers Data** - Supplier information and performance metrics
+- **Inventory Data** - Current stock levels and parameters
+- **Product Master Data** - Product specifications and pricing
+- **External Factors Data** - Market conditions and environmental factors
+
+##  Installation & Setup
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Installation Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/supply-chain-optimizer.git
+   cd supply-chain-optimizer
+   ```
+
+2. Create a virtual environment (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Ensure SQLite database path is correct:
+   ```
+   ./supply_chain_data/supply_chain_data.db
+   ```
+
+##  Usage
+
+### Running the Expert System
 
 ```python
-def advanced_inventory_optimization(self, product_id=None):
-    # Fetch inventory data
-    query = {'product_id': product_id} if product_id else {}
-    inventory_data = list(self.inventory_collection.find(query))
-    df = pd.DataFrame(inventory_data)
-    
-    # Linear Programming Optimization
-    prob = pulp.LpProblem("Inventory_Optimization", pulp.LpMinimize)
-    
-    # Decision Variables
-    order_quantities = {
-        row['product_id']: pulp.LpVariable(f"order_{row['product_id']}", lowBound=0)
-        for _, row in df.iterrows()
-    }
-    
-    # Objective Function: Minimize Total Cost
-    prob += pulp.lpSum([
-        (row['order_cost'] + row['holding_cost'] * order_quantities[row['product_id']])
-        for _, row in df.iterrows()
-    ])
-    
-    # Constraints
-    for _, row in df.iterrows():
-        # Demand Satisfaction
-        prob += order_quantities[row['product_id']] >= row['annual_demand']
-        
-        # Capacity Constraints
-        prob += order_quantities[row['product_id']] <= row['max_order_quantity']
-    
-    # Solve the problem
-    prob.solve()
-    
-    return {
-        'status': pulp.LpStatus[prob.status],
-        'optimal_orders': {
-            product_id: order_quantities[product_id].varValue
-            for product_id in order_quantities
-        },
-        'total_cost': pulp.value(prob.objective)
-    }
+from expert_system import SQLiteSupplyChainExpertSystem
+
+# Initialize the expert system
+expert = SQLiteSupplyChainExpertSystem()
+
+# Run the analysis
+expert.run_expert_analysis()
+
+# Close connection when done
+expert.close()
 ```
 
-## 4. Risk Assessment
-
-### Mathematical Model
-
-**Individual Risk Component**:
-$R_i = \sum_{j=1}^{k} w_j \cdot f_j(x_i)$
-
-**Composite Risk Level Calculation**:
-$Risk_{Overall} = \frac{1}{3}\left(\frac{\sum R_{supplier}}{n_{supplier}} + \frac{\sum R_{inventory}}{n_{inventory}} + \frac{\sum R_{external}}{n_{external}}\right)$
-
-### Implementation Code
+### Using the Optimization Engine
 
 ```python
-def supply_chain_risk_assessment(self):
-    # Fetch relevant data
-    suppliers = list(self.suppliers_collection.find())
-    inventory = list(self.inventory_collection.find())
-    external_factors = list(self.external_factors_collection.find())
-    
-    # Risk Assessment Components
-    risk_assessment = {
-        'supplier_risks': [],
-        'inventory_risks': [],
-        'external_risks': []
-    }
-    
-    # Supplier Risks Calculation
-    for supplier in suppliers:
-        risk_score = 0
-        if supplier['reliability_score'] < 0.5:
-            risk_score += 0.3
-        if supplier['delivery_time'] > 30:
-            risk_score += 0.2
-        
-        risk_assessment['supplier_risks'].append({
-            'supplier_id': supplier['supplier_id'],
-            'name': supplier['name'],
-            'risk_score': risk_score
-        })
-    
-    # Inventory Risks Calculation
-    for item in inventory:
-        risk_score = 0
-        if item['current_stock'] < item['safety_stock_level']:
-            risk_score += 0.4
-        if item['perishability'] > 0.7:
-            risk_score += 0.3
-        
-        risk_assessment['inventory_risks'].append({
-            'product_id': item['product_id'],
-            'risk_score': risk_score
-        })
-    
-    # External Risks Calculation
-    for factor in external_factors:
-        risk_score = 0
-        if factor['geopolitical_risk'] > 7:
-            risk_score += 0.3
-        if factor['transportation_cost_index'] > 110:
-            risk_score += 0.2
-        
-        risk_assessment['external_risks'].append({
-            'date': factor['date'],
-            'risk_score': risk_score
-        })
-    
-    # Overall Risk Calculation
-    risk_assessment['overall_risk_level'] = np.mean([
-        np.mean([r['risk_score'] for r in risk_assessment['supplier_risks']]),
-        np.mean([r['risk_score'] for r in risk_assessment['inventory_risks']]),
-        np.mean([r['risk_score'] for r in risk_assessment['external_risks']])
-    ])
-    
-    return risk_assessment
+from SQLiteSupplyChainOptimizer import SQLiteSupplyChainOptimizer
+
+# Initialize the optimizer
+optimizer = SQLiteSupplyChainOptimizer()
+
+# Use various optimization functions
+forecast = optimizer.demand_forecasting(forecast_horizon=120)
+supplier_analysis = optimizer.supplier_analysis()
+inventory_recommendations = optimizer.inventory_optimization()
+risks = optimizer.risk_assessment()
+
+# Generate comprehensive report
+report = optimizer.generate_report(report_type='all')
 ```
 
-## 5. Data Preprocessing
+### Starting the API Server
 
-### Mathematical Model
+```bash
+python backend.py
+```
 
-**Min-Max Scaling**:
-$X_{scaled} = \frac{X - X_{min}}{X_{max} - X_{min}}$
+The server will start on http://localhost:5000 by default.
 
-**Z-Score Normalization**:
-$Z = \frac{X - \mu}{\sigma}$
+### API Usage Examples
 
-### Implementation Code
+**Fetch Sales Data:**
+```bash
+curl http://localhost:5000/api/sales?limit=10&category=Electronics
+```
+
+**Add New Supplier:**
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"name":"New Supplier", "location":"Chicago", "price_rating":0.85, "quality_rating":0.9, "delivery_time":7, "reliability_score":0.92}' http://localhost:5000/api/suppliers
+```
+
+**Update Inventory Record:**
+```bash
+curl -X PUT -H "Content-Type: application/json" -d '{"product_id":"P1001", "category":"Electronics", "current_stock":150, "safety_stock_level":50, "reorder_point":75}' http://localhost:5000/api/inventory/1
+```
+
+**Delete Product Record:**
+```bash
+curl -X DELETE http://localhost:5000/api/products/5
+```
+
+##  Advanced Configuration
+
+### Customizing Supplier Analysis Weights
 
 ```python
-def preprocess_data(self, collection_name, data_type='sales'):
-    # Fetch data from MongoDB
-    cursor = self.db[collection_name].find()
-    df = pd.DataFrame(list(cursor))
-    
-    # Data cleaning and feature engineering
-    if data_type == 'sales':
-        df['date'] = pd.to_datetime(df['date'])
-        
-        # Temporal feature extraction
-        df['month'] = df['date'].dt.month
-        df['quarter'] = df['date'].dt.quarter
-        df['is_weekend'] = df['date'].dt.dayofweek.isin([5, 6]).astype(int)
-        
-        # Preprocessing pipeline
-        numeric_cols = ['sales_quantity', 'sales_value']
-        categorical_cols = ['category', 'region', 'channel']
-        
-        # Imputation and transformation
-        numeric_transformer = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', MinMaxScaler())
-        ])
-        
-        categorical_transformer = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='constant', fill_value='Unknown')),
-            ('onehot', OneHotEncoder(handle_unknown='ignore'))
-        ])
-        
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', numeric_transformer, numeric_cols),
-                ('cat', categorical_transformer, categorical_cols)
-            ])
-        
-        # Apply transformations
-        preprocessed_data = preprocessor.fit_transform(df)
-        
-        return preprocessed_data
+criteria_weights = {
+    'price_rating': 0.35,       # Higher priority on price
+    'quality_rating': 0.30,     # Strong emphasis on quality
+    'delivery_time': 0.15,      # Less emphasis on delivery time
+    'reliability_score': 0.15,  # Less emphasis on reliability
+    'financial_stability_score': 0.05  # Minimal emphasis on financials
+}
+
+supplier_analysis = optimizer.supplier_analysis(criteria_weights=criteria_weights)
 ```
 
-## Computational Complexity Analysis
+### Specific Product Inventory Optimization
 
-### Complexity Metrics
+```python
+# Optimize inventory for a specific product
+product_optimization = optimizer.inventory_optimization(product_id='P1001')
+```
 
-- Demand Forecasting: $O(n \log n)$
-- Supplier Selection: $O(m \cdot n)$
-- Inventory Optimization: $O(n^2)$
-- Risk Assessment: $O(k \cdot m)$
+### Custom Report Generation
 
-Where:
-- $n$ is the number of products/suppliers
-- $m$ is the number of features
-- $k$ is the number of risk factors
+```python
+# Generate a report focused on risk assessment
+risk_report = optimizer.generate_report(report_type='risk')
+```
 
-## Key Insights
+##  Design Patterns & Architecture
 
-The expert system combines:
-1. Advanced mathematical modeling
-2. Statistical inference techniques
-3. Machine learning algorithms
-4. Optimization strategies
+The system follows several key design patterns:
 
-Each component integrates:
-- Probabilistic reasoning
-- Quantitative analysis
-- Adaptive learning mechanisms
+1. **Repository Pattern** - Database access is abstracted through query methods
+2. **Strategy Pattern** - Different optimization algorithms can be selected
+3. **Factory Pattern** - Report generation based on report type
+4. **Facade Pattern** - Simplified interface to complex optimization subsystems
 
-### Practical Applications
+The architecture separates concerns into:
+- **Data Access Layer** - SQLite connection and queries
+- **Business Logic Layer** - Optimization algorithms and analysis
+- **API Layer** - RESTful endpoints for integration
 
-The integrated approach enables:
-- Precise demand forecasting
-- Optimal supplier selection
-- Efficient inventory management
-- Comprehensive risk mitigation
+##  Data Flow
 
-## Conclusion
+1. Raw data from various sources is stored in SQLite database
+2. Data is preprocessed during optimization operations
+3. Machine learning models analyze patterns and generate forecasts
+4. Optimization algorithms calculate ideal parameters
+5. Results are made available through the API or direct method calls
+6. Frontend systems can visualize and interact with the data
 
-The mathematical and computational framework provides a robust, data-driven methodology for supply chain optimization, leveraging sophisticated techniques to generate actionable, strategic insights.
+##  Error Handling
+
+The system includes comprehensive error handling:
+
+- SQLite connection errors
+- Data preprocessing issues
+- Machine learning model failures
+- API request validation
+
+All errors are logged with appropriate detail level for debugging.
+
+##  Security Considerations
+
+- Input validation on all API endpoints
+- No direct SQL queries (preventing SQL injection)
+- Error messages don't expose sensitive information
+- CORS configuration for controlled API access
+
+##  Performance Optimization
+
+- Efficient SQLite queries with appropriate indices
+- Caching of machine learning models in memory
+- Pagination for large dataset queries
+- Targeted SQL queries to minimize data transfer
+
+
+##  License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+© 2025 Supply Chain Optimization Project 
