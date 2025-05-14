@@ -1,0 +1,21 @@
+supplier_id,name,contact_person,location,price_rating,quality_rating,delivery_time,reliability_score,financial_stability_score,min_order_quantity,max_order_quantity,lead_time_variability,production_capacity,transportation_cost,compliance_certifications,geopolitical_risk_factor,environmental_sustainability_score
+SUP_f81ae6ae,Supplier SUP_f81ae6ae,Contact 44,Europe,4.17,1.81,35.17,0.3,3.42,316,8793,8.88,27140,396.93,['Fair Trade'],0.91,0.45
+SUP_49210a10,Supplier SUP_49210a10,Contact 70,North America,2.78,4.12,41.02,0.08,4.23,836,4132,1.84,82519,191.44,"['ISO 14001', 'ISO 9001']",0.81,0.33
+SUP_f0d0f479,Supplier SUP_f0d0f479,Contact 92,North America,5.77,6.67,24.93,0.89,9.7,451,7091,9.73,47583,430.13,"['LEED', 'Six Sigma', 'OHSAS 18001']",0.09,0.57
+SUP_eeb618c6,Supplier SUP_eeb618c6,Contact 37,Asia Pacific,5.82,1.87,32.25,0.4,8.49,298,4069,9.04,63875,73.56,['ISO 9001'],0.63,0.09
+SUP_4b38e89d,Supplier SUP_4b38e89d,Contact 88,North America,8.72,1.15,43.2,0.65,3.77,124,8920,6.63,36692,109.7,"['OHSAS 18001', 'LEED']",0.14,0.31
+SUP_08384979,Supplier SUP_08384979,Contact 35,Latin America,9.6,1.7,6.92,0.59,4.38,465,2715,9.83,61847,475.33,"['LEED', 'REACH', 'ISO 14001']",0.95,0.55
+SUP_2100a4ea,Supplier SUP_2100a4ea,Contact 5,Latin America,8.96,3.84,19.0,0.8,5.06,533,3854,1.83,20736,265.27,"['Fair Trade', 'ISO 14001', 'OHSAS 18001']",0.24,0.45
+SUP_db3ade14,Supplier SUP_db3ade14,Contact 44,Middle East & Africa,6.43,2.81,16.71,0.05,7.98,772,5741,9.6,70160,429.53,['REACH'],0.11,0.04
+SUP_a403ac48,Supplier SUP_a403ac48,Contact 23,Asia Pacific,7.2,6.93,7.99,0.51,9.42,240,8654,7.14,68606,183.66,['ISO 9001'],0.99,0.65
+SUP_05f08ebb,Supplier SUP_05f08ebb,Contact 59,Latin America,8.4,8.51,11.38,0.61,7.56,334,6980,2.56,54875,86.58,['REACH'],0.24,0.93
+SUP_d0eb60f3,Supplier SUP_d0eb60f3,Contact 4,Middle East & Africa,5.36,8.43,40.84,0.55,1.41,101,1239,8.83,68156,302.83,"['ISO 9001', 'REACH']",0.44,0.62
+SUP_026c629c,Supplier SUP_026c629c,Contact 88,Middle East & Africa,9.66,7.88,44.52,0.01,3.08,186,4211,1.11,62208,434.1,['REACH'],0.04,0.81
+SUP_c65227a5,Supplier SUP_c65227a5,Contact 81,Asia Pacific,1.21,4.54,12.41,0.66,6.99,741,7943,1.49,11700,89.08,['Fair Trade'],0.52,0.52
+SUP_98649f29,Supplier SUP_98649f29,Contact 24,Latin America,3.77,9.38,19.04,0.11,6.79,718,7944,5.63,22392,206.2,"['ISO 9001', 'OHSAS 18001', 'ISO 14001']",0.06,0.25
+SUP_f1f1f924,Supplier SUP_f1f1f924,Contact 9,Middle East & Africa,5.83,8.98,38.01,0.12,5.95,830,6377,9.59,13687,195.65,"['Fair Trade', 'REACH', 'OHSAS 18001']",0.75,0.5
+SUP_ff6a4d84,Supplier SUP_ff6a4d84,Contact 33,Latin America,1.23,1.04,24.48,0.58,1.78,246,5321,6.47,98519,182.16,"['OHSAS 18001', 'REACH']",0.03,0.9
+SUP_d4944f04,Supplier SUP_d4944f04,Contact 3,Asia Pacific,1.87,1.84,20.2,0.05,8.24,871,7519,7.13,75014,99.17,['OHSAS 18001'],0.37,0.35
+SUP_f9557658,Supplier SUP_f9557658,Contact 17,North America,9.71,7.04,36.38,0.78,5.04,371,2017,2.27,82142,182.74,['Fair Trade'],0.96,0.35
+SUP_f5264b4c,Supplier SUP_f5264b4c,Contact 30,Latin America,1.11,7.62,41.76,0.6,7.69,815,9489,2.66,51963,322.9,"['Fair Trade', 'OHSAS 18001']",0.77,0.69
+SUP_9c2b9220,Supplier SUP_9c2b9220,Contact 82,Asia Pacific,3.73,7.55,31.19,0.53,4.52,337,9881,1.77,46094,211.26,"['LEED', 'REACH', 'OHSAS 18001']",0.88,0.7

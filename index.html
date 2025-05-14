@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Knowledge Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .dashboard-container {
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            font-weight: bold;
+            background-color: #0d6efd;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            cursor: pointer;
+            position: relative;
+            background-color: #e9ecef;
+        }
+        th:hover {
+            background-color: #dee2e6;
+        }
+        th.sort-asc::after {
+            content: " ▲";
+            color: #0d6efd;
+        }
+        th.sort-desc::after {
+            content: " ▼";
+            color: #0d6efd;
+        }
+        .filters {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .pagination {
+            margin-top: 15px;
+        }    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Supply Chain Knowledge Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#sales">Sales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#suppliers">Suppliers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#inventory">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#externalFactors">External Factors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#expert">Expert Insights</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid dashboard-container">
+        <!-- Home Title and Description -->
+        <div class="text-center my-4">
+            <h1 class="display-4 fw-bold text-primary">Supply Chain Knowledge Management System</h1>
+            <p class="lead">A unified platform for advanced supply chain analytics, optimization, and expert insights.<br>
+            Manage your sales, suppliers, inventory, products, and external factors with ease.</p>
+        </div>
+        <!-- Modern Dashboard Section -->
+        <div id="home-dashboard" class="mb-4">
+            <div class="row g-4">
+                <div class="col-md-3"><div class="card text-center"><div class="card-header">Total Sales</div><div class="card-body"><h3 id="dashboard-total-sales">-</h3></div></div></div>
+                <div class="col-md-3"><div class="card text-center"><div class="card-header">Inventory Value</div><div class="card-body"><h3 id="dashboard-inventory-value">-</h3></div></div></div>
+                <div class="col-md-3"><div class="card text-center"><div class="card-header">Suppliers</div><div class="card-body"><h3 id="dashboard-suppliers">-</h3></div></div></div>
+                <div class="col-md-3"><div class="card text-center"><div class="card-header">Products</div><div class="card-body"><h3 id="dashboard-products">-</h3></div></div></div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6"><div class="card"><div class="card-header">Sales by Category</div><div class="card-body"><ul id="dashboard-sales-by-category" class="list-group"></ul></div></div></div>
+                <div class="col-md-6"><div class="card"><div class="card-header">Sales by Region</div><div class="card-body"><ul id="dashboard-sales-by-region" class="list-group"></ul></div></div></div>
+            </div>
+        </div>
+        <div class="tab-content">
+            <!-- Sales Tab -->
+            <div class="tab-pane fade show active" id="sales">
+                <div id="sales-controls" class="mb-2">
+                    <button class="btn btn-success btn-sm" onclick="openCrudModal('sales', 'add')">Add New</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">Sales Data</div>
+                    <div class="card-body">
+                        <div class="filters row">
+                            <div class="col-md-3">
+                                <label for="sales-category-filter" class="form-label">Category:</label>
+                                <select id="sales-category-filter" class="form-select">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="sales-region-filter" class="form-label">Region:</label>
+                                <select id="sales-region-filter" class="form-select">
+                                    <option value="">All Regions</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="sales-date-filter" class="form-label">Date Range:</label>
+                                <select id="sales-date-filter" class="form-select">
+                                    <option value="all">All Time</option>
+                                    <option value="last30">Last 30 Days</option>
+                                    <option value="last90">Last 90 Days</option>
+                                    <option value="last365">Last Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="sales-search" class="form-label">Search:</label>
+                                <input type="text" id="sales-search" class="form-control" placeholder="Search...">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="sales-table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="sales_id">Sales ID</th>
+                                        <th data-sort="product_id">Product ID</th>
+                                        <th data-sort="date">Date</th>
+                                        <th data-sort="sales_quantity">Quantity</th>
+                                        <th data-sort="sales_value">Value</th>
+                                        <th data-sort="category">Category</th>
+                                        <th data-sort="region">Region</th>
+                                        <th data-sort="channel">Channel</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul id="sales-pagination" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suppliers Tab -->
+            <div class="tab-pane fade" id="suppliers">
+                <div id="suppliers-controls" class="mb-2">
+                    <button class="btn btn-success btn-sm" onclick="openCrudModal('suppliers', 'add')">Add New</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">Suppliers Data</div>
+                    <div class="card-body">
+                        <div class="filters row">
+                            <div class="col-md-3">
+                                <label for="suppliers-location-filter" class="form-label">Location:</label>
+                                <select id="suppliers-location-filter" class="form-select">
+                                    <option value="">All Locations</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="suppliers-rating-filter" class="form-label">Min Quality Rating:</label>
+                                <input type="range" id="suppliers-rating-filter" class="form-range" min="1" max="10" step="0.5" value="1">
+                                <span id="suppliers-rating-value">1</span>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="suppliers-search" class="form-label">Search:</label>
+                                <input type="text" id="suppliers-search" class="form-control" placeholder="Search...">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="suppliers-table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="supplier_id">Supplier ID</th>
+                                        <th data-sort="name">Name</th>
+                                        <th data-sort="location">Location</th>
+                                        <th data-sort="price_rating">Price Rating</th>
+                                        <th data-sort="quality_rating">Quality Rating</th>
+                                        <th data-sort="delivery_time">Delivery Time</th>
+                                        <th data-sort="reliability_score">Reliability</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul id="suppliers-pagination" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Tab -->
+            <div class="tab-pane fade" id="inventory">
+                <div id="inventory-controls" class="mb-2">
+                    <button class="btn btn-success btn-sm" onclick="openCrudModal('inventory', 'add')">Add New</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">Inventory Data</div>
+                    <div class="card-body">
+                        <div class="filters row">
+                            <div class="col-md-3">
+                                <label for="inventory-category-filter" class="form-label">Category:</label>
+                                <select id="inventory-category-filter" class="form-select">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="inventory-stock-filter" class="form-label">Stock Status:</label>
+                                <select id="inventory-stock-filter" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="low">Low Stock</option>
+                                    <option value="normal">Normal Stock</option>
+                                    <option value="high">High Stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="inventory-search" class="form-label">Search:</label>
+                                <input type="text" id="inventory-search" class="form-control" placeholder="Search...">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="inventory-table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="product_id">Product ID</th>
+                                        <th data-sort="category">Category</th>
+                                        <th data-sort="current_stock">Current Stock</th>
+                                        <th data-sort="safety_stock_level">Safety Stock</th>
+                                        <th data-sort="reorder_point">Reorder Point</th>
+                                        <th data-sort="lead_time">Lead Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul id="inventory-pagination" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-pane fade" id="products">
+                <div id="products-controls" class="mb-2">
+                    <button class="btn btn-success btn-sm" onclick="openCrudModal('products', 'add')">Add New</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">Products Data</div>
+                    <div class="card-body">
+                        <div class="filters row">
+                            <div class="col-md-3">
+                                <label for="products-category-filter" class="form-label">Category:</label>
+                                <select id="products-category-filter" class="form-select">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="products-profit-filter" class="form-label">Min Profit Margin:</label>
+                                <input type="range" id="products-profit-filter" class="form-range" min="0" max="100" step="5" value="0">
+                                <span id="products-profit-value">0%</span>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="products-search" class="form-label">Search:</label>
+                                <input type="text" id="products-search" class="form-control" placeholder="Search...">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="products-table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="product_id">Product ID</th>
+                                        <th data-sort="product_name">Name</th>
+                                        <th data-sort="category">Category</th>
+                                        <th data-sort="unit_cost">Unit Cost</th>
+                                        <th data-sort="selling_price">Selling Price</th>
+                                        <th data-sort="profit_margin">Profit Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul id="products-pagination" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- External Factors Tab -->
+            <div class="tab-pane fade" id="externalFactors">
+                <div id="externalFactors-controls" class="mb-2">
+                    <button class="btn btn-success btn-sm" onclick="openCrudModal('externalFactors', 'add')">Add New</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">External Factors Data</div>
+                    <div class="card-body">
+                        <div class="filters row">
+                            <div class="col-md-3">
+                                <label for="factors-date-filter" class="form-label">Date Range:</label>
+                                <select id="factors-date-filter" class="form-select">
+                                    <option value="all">All Time</option>
+                                    <option value="last30">Last 30 Days</option>
+                                    <option value="last90">Last 90 Days</option>
+                                    <option value="last365">Last Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="factors-risk-filter" class="form-label">Risk Level:</label>
+                                <select id="factors-risk-filter" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="low">Low Risk</option>
+                                    <option value="medium">Medium Risk</option>
+                                    <option value="high">High Risk</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="factors-table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th data-sort="date">Date</th>
+                                        <th data-sort="market_sentiment_index">Market Sentiment</th>
+                                        <th data-sort="commodity_price_index">Commodity Price</th>
+                                        <th data-sort="geopolitical_risk_index">Geopolitical Risk</th>
+                                        <th data-sort="transportation_cost_index">Transportation Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul id="factors-pagination" class="pagination justify-content-center"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expert Insights Tab -->
+            <div class="tab-pane fade" id="expert">
+                <div class="card">
+                    <div class="card-header">Expert System Insights</div>
+                    <div class="card-body" id="expert-insights-body">
+                        <div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="crudModalLabel">Add/Edit Record</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"><form id="crudForm"></form></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="crudFormSubmit">Save</button>
+            </div>
+        </div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>    <script>
+        // Global data storage
+        const dataStore = {
+            sales: [],
+            suppliers: [],
+            inventory: [],
+            products: [],
+            externalFactors: []
+        };
+
+        // Global filter values
+        const filters = {
+            sales: { category: '', region: '', dateRange: 'all', search: '' },
+            suppliers: { location: '', minRating: 1, search: '' },
+            inventory: { category: '', stockStatus: '', search: '' },
+            products: { category: '', minProfit: 0, search: '' },
+            externalFactors: { dateRange: 'all', risk: '' }
+        };
+
+        // Pagination settings
+        const pagination = {
+            sales: { currentPage: 1, rowsPerPage: 10 },
+            suppliers: { currentPage: 1, rowsPerPage: 10 },
+            inventory: { currentPage: 1, rowsPerPage: 10 },
+            products: { currentPage: 1, rowsPerPage: 10 },
+            externalFactors: { currentPage: 1, rowsPerPage: 10 }
+        };
+
+        // Sort settings
+        const sortSettings = {
+            sales: { column: 'date', direction: 'desc' },
+            suppliers: { column: 'supplier_id', direction: 'asc' },
+            inventory: { column: 'product_id', direction: 'asc' },
+            products: { column: 'product_id', direction: 'asc' },
+            externalFactors: { column: 'date', direction: 'desc' }
+        };
+
+        // --- DASHBOARD LOADING ---
+        async function loadDashboard() {
+            const res = await fetch('http://localhost:5000/api/dashboard');
+            const data = await res.json();
+            document.getElementById('dashboard-total-sales').textContent = data.totals.sales?.toLocaleString() || '-';
+            document.getElementById('dashboard-inventory-value').textContent = data.totals.inventory_value?.toLocaleString() || '-';
+            document.getElementById('dashboard-suppliers').textContent = data.totals.suppliers || '-';
+            document.getElementById('dashboard-products').textContent = data.totals.products || '-';
+            // Sales by category
+            const catList = document.getElementById('dashboard-sales-by-category');
+            catList.innerHTML = '';
+            data.sales_by_category.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.textContent = item.category;
+                const span = document.createElement('span');
+                span.className = 'badge bg-primary rounded-pill';
+                span.textContent = item.total.toLocaleString();
+                li.appendChild(span);
+                catList.appendChild(li);
+            });
+            // Sales by region
+            const regList = document.getElementById('dashboard-sales-by-region');
+            regList.innerHTML = '';
+            data.sales_by_region.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.textContent = item.region;
+                const span = document.createElement('span');
+                span.className = 'badge bg-success rounded-pill';
+                span.textContent = item.total.toLocaleString();
+                li.appendChild(span);
+                regList.appendChild(li);
+            });
+        }
+
+        // --- CRUD UI ---
+        function openCrudModal(dataType, mode, rowid = null, rowData = {}) {
+            const fieldsMap = {
+                sales: ['date','product_id','category','region','sales_channel','sales_quantity','sales_value'],
+                suppliers: ['name','contact_person','location','price_rating','quality_rating','delivery_time','reliability_score','financial_stability_score','min_order_quantity','max_order_quantity','lead_time_variability','production_capacity','transportation_cost','compliance_certifications','geopolitical_risk_factor','environmental_sustainability_score'],
+                inventory: ['product_id','category','current_stock','safety_stock_level','reorder_point','economic_order_quantity','annual_demand','daily_average_demand','demand_variability','order_cost','holding_cost','storage_cost','stockout_cost','lead_time','lead_time_std','demand_std','perishability','shelf_life_days','obsolescence_risk'],
+                products: ['product_id','category','unit_cost','selling_price','profit_margin'],
+                'external-factors': ['date','economic_indicators','market_sentiment_index','commodity_price_index','geopolitical_risk_index','transportation_cost_index','weather_impact_factor','natural_disaster_risk']
+            };
+            const fields = fieldsMap[dataType];
+            const form = document.getElementById('crudForm');
+            form.innerHTML = '';
+            fields.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'mb-2';
+                const label = document.createElement('label');
+                label.textContent = f;
+                label.className = 'form-label';
+                const input = document.createElement('input');
+                input.className = 'form-control';
+                input.name = f;
+                input.value = rowData[f] || '';
+                div.appendChild(label);
+                div.appendChild(input);
+                form.appendChild(div);
+            });
+            const submitBtn = document.getElementById('crudFormSubmit');
+            submitBtn.onclick = async (e) => {
+                e.preventDefault();
+                const formData = {};
+                fields.forEach(f => {
+                    formData[f] = form.elements[f].value;
+                });
+                let url = `http://localhost:5000/api/${dataType}`;
+                let method = 'POST';
+                if (mode === 'edit') {
+                    url += `/${rowid}`;
+                    method = 'PUT';
+                }
+                await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                location.reload();
+            };
+            new bootstrap.Modal(document.getElementById('crudModal')).show();
+        }
+        async function deleteRecord(dataType, rowid) {
+            if (!confirm('Are you sure you want to delete this record?')) return;
+            await fetch(`http://localhost:5000/api/${dataType}/${rowid}`, { method: 'DELETE' });
+            location.reload();
+        }
+
+        // Initialize the application
+        async function init() {
+            await fetchAllData();
+            setupEventListeners();
+            populateFilterOptions();
+            
+            // Initialize Bootstrap tabs
+            document.querySelectorAll('.nav-link').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
+                    document.querySelectorAll('.nav-link').forEach(t => t.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const target = this.getAttribute('href');
+                    document.querySelector(target).classList.add('show', 'active');
+                });
+            });
+
+            // Show the sales tab by default
+            renderData('sales');
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Setup sorting
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', function() {
+                    const tableId = this.closest('table').id;
+                    const dataType = tableId.split('-')[0];
+                    const column = this.dataset.sort;
+                    
+                    // Toggle sort direction
+                    if (sortSettings[dataType].column === column) {
+                        sortSettings[dataType].direction = sortSettings[dataType].direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortSettings[dataType].column = column;
+                        sortSettings[dataType].direction = 'asc';
+                    }
+                    
+                    renderData(dataType);
+                });
+            });
+
+            // Setup filter listeners for Sales
+            document.getElementById('sales-category-filter').addEventListener('change', function() {
+                filters.sales.category = this.value;
+                pagination.sales.currentPage = 1;
+                renderData('sales');
+            });
+            
+            document.getElementById('sales-region-filter').addEventListener('change', function() {
+                filters.sales.region = this.value;
+                pagination.sales.currentPage = 1;
+                renderData('sales');
+            });
+            
+            document.getElementById('sales-date-filter').addEventListener('change', function() {
+                filters.sales.dateRange = this.value;
+                pagination.sales.currentPage = 1;
+                renderData('sales');
+            });
+            
+            document.getElementById('sales-search').addEventListener('input', function() {
+                filters.sales.search = this.value.toLowerCase();
+                pagination.sales.currentPage = 1;
+                renderData('sales');
+            });
+
+            // Setup filter listeners for Suppliers
+            document.getElementById('suppliers-location-filter').addEventListener('change', function() {
+                filters.suppliers.location = this.value;
+                pagination.suppliers.currentPage = 1;
+                renderData('suppliers');
+            });
+            
+            document.getElementById('suppliers-rating-filter').addEventListener('input', function() {
+                filters.suppliers.minRating = parseFloat(this.value);
+                document.getElementById('suppliers-rating-value').textContent = this.value;
+                pagination.suppliers.currentPage = 1;
+                renderData('suppliers');
+            });
+            
+            document.getElementById('suppliers-search').addEventListener('input', function() {
+                filters.suppliers.search = this.value.toLowerCase();
+                pagination.suppliers.currentPage = 1;
+                renderData('suppliers');
+            });
+
+            // Setup filter listeners for Inventory
+            document.getElementById('inventory-category-filter').addEventListener('change', function() {
+                filters.inventory.category = this.value;
+                pagination.inventory.currentPage = 1;
+                renderData('inventory');
+            });
+            
+            document.getElementById('inventory-stock-filter').addEventListener('change', function() {
+                filters.inventory.stockStatus = this.value;
+                pagination.inventory.currentPage = 1;
+                renderData('inventory');
+            });
+            
+            document.getElementById('inventory-search').addEventListener('input', function() {
+                filters.inventory.search = this.value.toLowerCase();
+                pagination.inventory.currentPage = 1;
+                renderData('inventory');
+            });
+
+            // Setup filter listeners for Products
+            document.getElementById('products-category-filter').addEventListener('change', function() {
+                filters.products.category = this.value;
+                pagination.products.currentPage = 1;
+                renderData('products');
+            });
+            
+            document.getElementById('products-profit-filter').addEventListener('input', function() {
+                filters.products.minProfit = parseInt(this.value);
+                document.getElementById('products-profit-value').textContent = this.value + '%';
+                pagination.products.currentPage = 1;
+                renderData('products');
+            });
+            
+            document.getElementById('products-search').addEventListener('input', function() {
+                filters.products.search = this.value.toLowerCase();
+                pagination.products.currentPage = 1;
+                renderData('products');
+            });
+
+            // Setup filter listeners for External Factors
+            document.getElementById('factors-date-filter').addEventListener('change', function() {
+                filters.externalFactors.dateRange = this.value;
+                pagination.externalFactors.currentPage = 1;
+                renderData('externalFactors');
+            });
+            
+            document.getElementById('factors-risk-filter').addEventListener('change', function() {
+                filters.externalFactors.risk = this.value;
+                pagination.externalFactors.currentPage = 1;
+                renderData('externalFactors');
+            });
+
+            // Setup event listener for Expert Insights
+            document.querySelector('a[href="#expert"]').addEventListener('click', fetchExpertInsights);
+        }
+
+        // Fetch all data from the backend
+        async function fetchAllData() {
+            try {
+                const salesResponse = await fetch('http://localhost:5000/api/sales');
+                dataStore.sales = await salesResponse.json();
+                
+                const suppliersResponse = await fetch('http://localhost:5000/api/suppliers');
+                dataStore.suppliers = await suppliersResponse.json();
+                
+                const inventoryResponse = await fetch('http://localhost:5000/api/inventory');
+                dataStore.inventory = await inventoryResponse.json();
+                
+                const productsResponse = await fetch('http://localhost:5000/api/products');
+                dataStore.products = await productsResponse.json();
+                
+                const factorsResponse = await fetch('http://localhost:5000/api/external-factors');
+                dataStore.externalFactors = await factorsResponse.json();
+                
+                console.log('All data loaded successfully');
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Failed to load data from the server. Please make sure the backend is running.');
+            }
+        }
+
+        // Fetch expert insights data
+        async function fetchExpertInsights() {
+            const body = document.getElementById('expert-insights-body');
+            body.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            try {
+                const res = await fetch('http://localhost:5000/api/expert-insights');
+                const data = await res.json();
+                let html = '';
+                // Sales Summary
+                html += `<h5>Sales Summary</h5><ul>`;
+                for (const [k, v] of Object.entries(data.sales_summary)) {
+                    html += `<li><strong>${k.replace(/_/g, ' ')}:</strong> ${v}</li>`;
+                }
+                html += '</ul>';
+                // Inventory Alerts
+                html += `<h5>Inventory Alerts</h5>`;
+                if (data.inventory_alerts.length === 0) {
+                    html += '<div class="alert alert-success">No inventory alerts.</div>';
+                } else {
+                    html += '<table class="table table-sm"><thead><tr><th>Product ID</th><th>Current Stock</th><th>Safety Stock Level</th></tr></thead><tbody>';
+                    data.inventory_alerts.forEach(row => {
+                        html += `<tr><td>${row.product_id}</td><td>${row.current_stock}</td><td>${row.safety_stock_level}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                // Supplier Risks
+                html += `<h5>Supplier Risks</h5>`;
+                if (data.supplier_risks.length === 0) {
+                    html += '<div class="alert alert-success">No high-risk suppliers.</div>';
+                } else {
+                    html += '<table class="table table-sm"><thead><tr><th>Supplier ID</th><th>Name</th><th>Reliability Score</th></tr></thead><tbody>';
+                    data.supplier_risks.forEach(row => {
+                        html += `<tr><td>${row.supplier_id}</td><td>${row.name}</td><td>${row.reliability_score}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                body.innerHTML = html;
+            } catch (e) {
+                body.innerHTML = '<div class="alert alert-danger">Failed to load expert insights.</div>';
+            }
+        }
+
+        // Populate filter options based on available data
+        function populateFilterOptions() {
+            // Populate sales category filter
+            const salesCategories = [...new Set(dataStore.sales.map(item => item.category))];
+            const salesCategorySelect = document.getElementById('sales-category-filter');
+            salesCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                salesCategorySelect.appendChild(option);
+            });
+            
+            // Populate sales region filter
+            const salesRegions = [...new Set(dataStore.sales.map(item => item.region))];
+            const salesRegionSelect = document.getElementById('sales-region-filter');
+            salesRegions.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region;
+                option.textContent = region;
+                salesRegionSelect.appendChild(option);
+            });
+            
+            // Populate suppliers location filter
+            const supplierLocations = [...new Set(dataStore.suppliers.map(item => item.location))];
+            const supplierLocationSelect = document.getElementById('suppliers-location-filter');
+            supplierLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                supplierLocationSelect.appendChild(option);
+            });
+            
+            // Populate inventory category filter
+            const inventoryCategories = [...new Set(dataStore.inventory.map(item => item.category))];
+            const inventoryCategorySelect = document.getElementById('inventory-category-filter');
+            inventoryCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                inventoryCategorySelect.appendChild(option);
+            });
+            
+            // Populate products category filter
+            const productCategories = [...new Set(dataStore.products.map(item => item.category))];
+            const productCategorySelect = document.getElementById('products-category-filter');
+            productCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                productCategorySelect.appendChild(option);
+            });
+        }
+
+        // Apply filters to data
+        function filterData(dataType) {
+            let filteredData = [...dataStore[dataType]];
+            
+            switch(dataType) {
+                case 'sales':
+                    if (filters.sales.category) {
+                        filteredData = filteredData.filter(item => item.category === filters.sales.category);
+                    }
+                    if (filters.sales.region) {
+                        filteredData = filteredData.filter(item => item.region === filters.sales.region);
+                    }
+                    if (filters.sales.dateRange !== 'all') {
+                        const today = new Date();
+                        let daysAgo;
+                        switch(filters.sales.dateRange) {
+                            case 'last30': daysAgo = 30; break;
+                            case 'last90': daysAgo = 90; break;
+                            case 'last365': daysAgo = 365; break;
+                        }
+                        const cutoffDate = new Date(today.setDate(today.getDate() - daysAgo));
+                        filteredData = filteredData.filter(item => new Date(item.date) >= cutoffDate);
+                    }
+                    if (filters.sales.search) {
+                        filteredData = filteredData.filter(item => 
+                            Object.values(item).some(val => 
+                                String(val).toLowerCase().includes(filters.sales.search)
+                            )
+                        );
+                    }
+                    break;
+                
+                case 'suppliers':
+                    if (filters.suppliers.location) {
+                        filteredData = filteredData.filter(item => item.location === filters.suppliers.location);
+                    }
+                    if (filters.suppliers.minRating > 1) {
+                        filteredData = filteredData.filter(item => parseFloat(item.quality_rating) >= filters.suppliers.minRating);
+                    }
+                    if (filters.suppliers.search) {
+                        filteredData = filteredData.filter(item => 
+                            Object.values(item).some(val => 
+                                String(val).toLowerCase().includes(filters.suppliers.search)
+                            )
+                        );
+                    }
+                    break;
+                
+                case 'inventory':
+                    if (filters.inventory.category) {
+                        filteredData = filteredData.filter(item => item.category === filters.inventory.category);
+                    }
+                    if (filters.inventory.stockStatus) {
+                        switch(filters.inventory.stockStatus) {
+                            case 'low':
+                                filteredData = filteredData.filter(item => 
+                                    parseInt(item.current_stock) <= parseInt(item.safety_stock_level));
+                                break;
+                            case 'normal':
+                                filteredData = filteredData.filter(item => 
+                                    parseInt(item.current_stock) > parseInt(item.safety_stock_level) && 
+                                    parseInt(item.current_stock) < parseInt(item.reorder_point) * 2);
+                                break;
+                            case 'high':
+                                filteredData = filteredData.filter(item => 
+                                    parseInt(item.current_stock) >= parseInt(item.reorder_point) * 2);
+                                break;
+                        }
+                    }
+                    if (filters.inventory.search) {
+                        filteredData = filteredData.filter(item => 
+                            Object.values(item).some(val => 
+                                String(val).toLowerCase().includes(filters.inventory.search)
+                            )
+                        );
+                    }
+                    break;
+                
+                case 'products':
+                    if (filters.products.category) {
+                        filteredData = filteredData.filter(item => item.category === filters.products.category);
+                    }
+                    if (filters.products.minProfit > 0) {
+                        filteredData = filteredData.filter(item => parseFloat(item.profit_margin) >= filters.products.minProfit);
+                    }
+                    if (filters.products.search) {
+                        filteredData = filteredData.filter(item => 
+                            Object.values(item).some(val => 
+                                String(val).toLowerCase().includes(filters.products.search)
+                            )
+                        );
+                    }
+                    break;
+                
+                case 'externalFactors':
+                    if (filters.externalFactors.dateRange !== 'all') {
+                        const today = new Date();
+                        let daysAgo;
+                        switch(filters.externalFactors.dateRange) {
+                            case 'last30': daysAgo = 30; break;
+                            case 'last90': daysAgo = 90; break;
+                            case 'last365': daysAgo = 365; break;
+                        }
+                        const cutoffDate = new Date(today.setDate(today.getDate() - daysAgo));
+                        filteredData = filteredData.filter(item => new Date(item.date) >= cutoffDate);
+                    }
+                    if (filters.externalFactors.risk) {
+                        switch(filters.externalFactors.risk) {
+                            case 'low':
+                                filteredData = filteredData.filter(item => parseFloat(item.geopolitical_risk_index) < 3);
+                                break;
+                            case 'medium':
+                                filteredData = filteredData.filter(item => 
+                                    parseFloat(item.geopolitical_risk_index) >= 3 && 
+                                    parseFloat(item.geopolitical_risk_index) < 7);
+                                break;
+                            case 'high':
+                                filteredData = filteredData.filter(item => parseFloat(item.geopolitical_risk_index) >= 7);
+                                break;
+                        }
+                    }
+                    break;
+            }
+            
+            return filteredData;
+        }
+
+        // Sort the data
+        function sortData(dataType, data) {
+            const { column, direction } = sortSettings[dataType];
+            return [...data].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                
+                // Handle numeric values
+                if (!isNaN(valA) && !isNaN(valB)) {
+                    valA = parseFloat(valA);
+                    valB = parseFloat(valB);
+                }
+                
+                // Handle date values
+                if (column === 'date') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                }
+                
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        // Render the data to the table
+        function renderData(dataType) {
+            // Get table and pagination elements
+            const tableId = dataType === 'externalFactors' ? 'factors' : dataType;
+            const tableBody = document.querySelector(`#${tableId}-table tbody`);
+            const paginationElement = document.getElementById(`${tableId}-pagination`);
+            
+            // Apply filters
+            const filteredData = filterData(dataType);
+            
+            // Sort data
+            const sortedData = sortData(dataType, filteredData);
+            
+            // Apply pagination
+            const { currentPage, rowsPerPage } = pagination[dataType];
+            const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+            const start = (currentPage - 1) * rowsPerPage;
+            const paginatedData = sortedData.slice(start, start + rowsPerPage);
+            
+            // Update table headers to show sort direction
+            document.querySelectorAll(`#${tableId}-table th`).forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.sort === sortSettings[dataType].column) {
+                    th.classList.add(`sort-${sortSettings[dataType].direction}`);
+                }
+            });
+            
+            // Clear the table
+            tableBody.innerHTML = '';
+            
+            // Add data to the table
+            paginatedData.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                // Create cells based on dataType
+                switch(dataType) {
+                    case 'sales':
+                        tr.innerHTML = `
+                            <td>${item.sales_id}</td>
+                            <td>${item.product_id}</td>
+                            <td>${item.date}</td>
+                            <td>${item.sales_quantity}</td>
+                            <td>${item.sales_value}</td>
+                            <td>${item.category}</td>
+                            <td>${item.region}</td>
+                            <td>${item.channel}</td>
+                        `;
+                        break;
+                    
+                    case 'suppliers':
+                        tr.innerHTML = `
+                            <td>${item.supplier_id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.location}</td>
+                            <td>${item.price_rating}</td>
+                            <td>${item.quality_rating}</td>
+                            <td>${item.delivery_time}</td>
+                            <td>${item.reliability_score}</td>
+                        `;
+                        break;
+                    
+                    case 'inventory':
+                        tr.innerHTML = `
+                            <td>${item.product_id}</td>
+                            <td>${item.category}</td>
+                            <td>${item.current_stock}</td>
+                            <td>${item.safety_stock_level}</td>
+                            <td>${item.reorder_point}</td>
+                            <td>${item.lead_time}</td>
+                        `;
+                        break;
+                    
+                    case 'products':
+                        tr.innerHTML = `
+                            <td>${item.product_id}</td>
+                            <td>${item.product_name}</td>
+                            <td>${item.category}</td>
+                            <td>${item.unit_cost}</td>
+                            <td>${item.selling_price}</td>
+                            <td>${item.profit_margin}%</td>
+                        `;
+                        break;
+                    
+                    case 'externalFactors':
+                        tr.innerHTML = `
+                            <td>${item.date}</td>
+                            <td>${item.market_sentiment_index}</td>
+                            <td>${item.commodity_price_index}</td>
+                            <td>${item.geopolitical_risk_index}</td>
+                            <td>${item.transportation_cost_index}</td>
+                        `;
+                        break;
+                }
+                
+                tableBody.appendChild(tr);
+            });
+            
+            // Render pagination
+            renderPagination(dataType, totalPages, currentPage, paginationElement);
+        }
+
+        // Render pagination controls
+        function renderPagination(dataType, totalPages, currentPage, paginationElement) {
+            paginationElement.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = '<a class="page-link" href="#">Previous</a>';
+            prevLi.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    pagination[dataType].currentPage = currentPage - 1;
+                    renderData(dataType);
+                }
+            });
+            paginationElement.appendChild(prevLi);
+            
+            // Page numbers
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pagination[dataType].currentPage = i;
+                    renderData(dataType);
+                });
+                paginationElement.appendChild(li);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = '<a class="page-link" href="#">Next</a>';
+            nextLi.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    pagination[dataType].currentPage = currentPage + 1;
+                    renderData(dataType);
+                }
+            });
+            paginationElement.appendChild(nextLi);
+        }
+
+        // Initialize the application
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadDashboard();
+            await init();
+        });
+    </script>
+</body>
+</html>
